@@ -1,0 +1,29 @@
+{
+  "name": "reto-backend-rimac",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "serverless offline start --stage DEV",
+    "deploy": "sls deploy --stage DEV",
+    "remove": "sls remove",
+    "lint": "lint",
+    "test": "jest",
+    "test:coverage": "jest --coverage"
+  },
+  "keywords": [],
+  "author": "Michael Cristopher Vargas Melgar",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1444.0",
+    "axios": "^1.4.0",
+    "joi": "^17.9.2",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.6.4",
+    "jest-cucumber": "^3.0.1",
+    "serverless": "^3.34.0",
+    "serverless-offline": "^12.0.4"
+  }
+}
