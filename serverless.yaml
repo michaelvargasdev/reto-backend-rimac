@@ -1,0 +1,176 @@
+service: swService
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: ${opt:stage,'DEV'}
+  region: ${self:custom.REGION}
+  runtimeManagement: auto
+  versionFunctions: false
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - arn:aws:dynamodb:*:*:table/${self:custom.TBL_PERSONAS}
+
+custom:
+  STAGE: ${self:provider.stage}
+  REGION: us-east-1
+  URL_SWAPI: https://swapi.py4e.com/api/
+  TBL_PELICULAS: ${self:custom.STAGE}_PELICULAS
+  TBL_PERSONAS: ${self:custom.STAGE}_PERSONAS
+  TBL_PLANETAS: ${self:custom.STAGE}_PLANETAS
+  TBL_ESPECIES: ${self:custom.STAGE}_ESPECIES
+  TBL_NAVES_ESTELARES: ${self:custom.STAGE}_NAVES_ESTELARES
+  TBL_VEHICULOS: ${self:custom.STAGE}_VEHICULOS
+  MOD_FILMS: films
+  MOD_PEOPLE: people
+  MOD_PLANETS: planets
+  MOD_SPECIES: species
+  MOD_STAR_SHIPS: starships
+  MOD_VEHICLES: vehicles
+
+functions:
+  cargaInicial:
+    handler: src/handlers/cargaInicialHandler.cargaInicial
+    name: ${self:custom.STAGE}_CARGA_INICIAL
+    description: Carga inicial de data de la entidad persona
+    timeout: 60
+    environment:
+      REGION: ${self:custom.REGION}
+      URL_SWAPI: ${self:custom.URL_SWAPI}
+      TBL_PELICULAS: ${self:custom.TBL_PELICULAS}
+      TBL_PERSONAS: ${self:custom.TBL_PERSONAS}
+      TBL_PLANETAS: ${self:custom.TBL_PLANETAS}
+      TBL_ESPECIES: ${self:custom.TBL_ESPECIES}
+      TBL_NAVES_ESTELARES: ${self:custom.TBL_NAVES_ESTELARES}
+      TBL_VEHICULOS: ${self:custom.TBL_VEHICULOS}
+      MOD_FILMS: ${self:custom.MOD_FILMS}
+      MOD_PEOPLE: ${self:custom.MOD_PEOPLE}
+      MOD_PLANETS: ${self:custom.MOD_PLANETS}
+      MOD_SPECIES: ${self:custom.MOD_SPECIES}
+      MOD_STAR_SHIPS: ${self:custom.MOD_STAR_SHIPS}
+      MOD_VEHICLES: ${self:custom.MOD_VEHICLES}
+    events:
+      - http:
+          method: get
+          path: /cargaInicial
+  personasFindSWAPI:
+    handler: src/handlers/personasHandler.personasFindSWAPI
+    name: ${self:custom.STAGE}_PERSONAS_FIND_SWAPI
+    description: Busca una persona por idPeople, busaca en la SWAPI
+    environment:
+      REGION: ${self:custom.REGION}
+      URL_SWAPI: ${self:custom.URL_SWAPI}
+      MOD_PEOPLE: ${self:custom.MOD_PEOPLE}
+    events:
+      - http:
+          method: get
+          path: /personasSWAPI/{idPeople}
+  peronasList:
+    handler: src/handlers/personasHandler.personasList
+    name: ${self:custom.STAGE}_PERSONAS_LIST
+    description: Lista todas las personas
+    environment:
+      REGION: ${self:custom.REGION}
+      URL_SWAPI: ${self:custom.URL_SWAPI}
+      TBL_PELICULAS: ${self:custom.TBL_PELICULAS}
+      TBL_PERSONAS: ${self:custom.TBL_PERSONAS}
+      TBL_PLANETAS: ${self:custom.TBL_PLANETAS}
+      TBL_ESPECIES: ${self:custom.TBL_ESPECIES}
+      TBL_NAVES_ESTELARES: ${self:custom.TBL_NAVES_ESTELARES}
+      TBL_VEHICULOS: ${self:custom.TBL_VEHICULOS}
+      MOD_FILMS: ${self:custom.MOD_FILMS}
+      MOD_PEOPLE: ${self:custom.MOD_PEOPLE}
+      MOD_PLANETS: ${self:custom.MOD_PLANETS}
+      MOD_SPECIES: ${self:custom.MOD_SPECIES}
+      MOD_STAR_SHIPS: ${self:custom.MOD_STAR_SHIPS}
+      MOD_VEHICLES: ${self:custom.MOD_VEHICLES}
+    events:
+      - http:
+          method: get
+          path: /personas
+  peronasFind:
+    handler: src/handlers/personasHandler.personasFind
+    name: ${self:custom.STAGE}_PERSONAS_FIND
+    description: Busca una persona por idPersona
+    environment:
+      REGION: ${self:custom.REGION}
+      URL_SWAPI: ${self:custom.URL_SWAPI}
+      TBL_PELICULAS: ${self:custom.TBL_PELICULAS}
+      TBL_PERSONAS: ${self:custom.TBL_PERSONAS}
+      TBL_PLANETAS: ${self:custom.TBL_PLANETAS}
+      TBL_ESPECIES: ${self:custom.TBL_ESPECIES}
+      TBL_NAVES_ESTELARES: ${self:custom.TBL_NAVES_ESTELARES}
+      TBL_VEHICULOS: ${self:custom.TBL_VEHICULOS}
+      MOD_FILMS: ${self:custom.MOD_FILMS}
+      MOD_PEOPLE: ${self:custom.MOD_PEOPLE}
+      MOD_PLANETS: ${self:custom.MOD_PLANETS}
+      MOD_SPECIES: ${self:custom.MOD_SPECIES}
+      MOD_STAR_SHIPS: ${self:custom.MOD_STAR_SHIPS}
+      MOD_VEHICLES: ${self:custom.MOD_VEHICLES}
+    events:
+      - http:
+          method: get
+          path: /personas/{idPersona}
+  peronasCreate:
+    handler: src/handlers/personasHandler.personasCreate
+    name: ${self:custom.STAGE}_PERSONAS_CREATE
+    description: Crea una nueva persona
+    environment:
+      REGION: ${self:custom.REGION}
+      URL_SWAPI: ${self:custom.URL_SWAPI}
+      TBL_PERSONAS: ${self:custom.TBL_PERSONAS}
+    events:
+      - http:
+          method: post
+          path: /personas
+  peronasUpdate:
+    handler: src/handlers/personasHandler.personasUpdate
+    name: ${self:custom.STAGE}_PERSONAS_UPDATE
+    description: Modifica una persona por el idPersona
+    environment:
+      REGION: ${self:custom.REGION}
+      URL_SWAPI: ${self:custom.URL_SWAPI}
+      TBL_PERSONAS: ${self:custom.TBL_PERSONAS}
+    events:
+      - http:
+          method: patch
+          path: /personas/{idPersona}
+  peronasDelete:
+    handler: src/handlers/personasHandler.personasDelete
+    name: ${self:custom.STAGE}_PERSONAS_DELETE
+    description: Elimina una persona por el idPersona
+    environment:
+      REGION: ${self:custom.REGION}
+      URL_SWAPI: ${self:custom.URL_SWAPI}
+      TBL_PERSONAS: ${self:custom.TBL_PERSONAS}
+    events:
+      - http:
+          method: delete
+          path: /personas/{idPersona}
+
+resources:
+  Resources:
+    personas:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.TBL_PERSONAS}
+        AttributeDefinitions:
+          - AttributeName: idPersona
+            AttributeType: S
+        KeySchema:
+          - AttributeName: idPersona
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+plugins:
+  - serverless-offline
